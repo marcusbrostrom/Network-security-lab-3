@@ -13,8 +13,8 @@ public class SecureAdditionClient {
 	private int port;
 	// This is not a reserved port number 
 	static final int DEFAULT_PORT = 8189;
-	static final String KEYSTORE = "LIUkeystore.ks";
-	static final String TRUSTSTORE = "LIUtruststore.ks";
+	static final String KEYSTORE = "client/LIUkeystore.ks";
+	static final String TRUSTSTORE = "client/LIUtruststore.ks";
 	static final String KEYSTOREPASS = "123456";
 	static final String TRUSTSTOREPASS = "abcdef";
   
@@ -29,6 +29,7 @@ public class SecureAdditionClient {
   // The method used to start a client object
 	public void run() {
 		try {
+			//Should we use PKS12 instead?
 			KeyStore ks = KeyStore.getInstance( "JCEKS" );
 			ks.load( new FileInputStream( KEYSTORE ), KEYSTOREPASS.toCharArray() );
 			
@@ -72,9 +73,11 @@ public class SecureAdditionClient {
 
 					String data = "0";
 					data = data + fileName + ".txt, ";
+					
 					try {
 					//Read file
 					File myFile = new File("client/"+fileName+".txt");
+					
 					Scanner myReader = new Scanner(myFile);
 					while (myReader.hasNextLine()) {
 					  data += myReader.nextLine();
@@ -84,6 +87,7 @@ public class SecureAdditionClient {
 				  } catch (FileNotFoundException e) {
 					System.out.println("An error occurred.");
 					e.printStackTrace();
+					break;
 				  }
 
 				  socketOut.println( data );
@@ -100,8 +104,8 @@ public class SecureAdditionClient {
 
 					socketOut.println( download );
 				  	String writeToFile = socketIn.readLine();
-					  System.out.println(" vad är denna texte " +writeToFile);
-					  
+				
+					  if(!writeToFile.equals("Does not exist") ){
 					try {
 						File myObj = new File("client/" + fileNametoDownload + ".txt");
 						if (myObj.createNewFile()) {
@@ -111,18 +115,31 @@ public class SecureAdditionClient {
 						  myWriter.write(writeToFile);
       					  myWriter.close();
 
-						} else {
+						}
+						 else {
 						  System.out.println("File already exists.");
+						  break;
 						}
 					  } catch (IOException e) {
 						System.out.println("An error occurred.");
 						e.printStackTrace();
 					  }
+					}
+					else 
 					 System.out.println("File does not exist on server");
 					break;
 
-				case 2: deleteFile();
-					break;
+				case 2: 
+				System.out.println("Which file do you want to delete?");
+				BufferedReader ReadFileName = new BufferedReader(new InputStreamReader(System.in));
+				String fileToDelete = ReadFileName.readLine();
+				String delete = "2";
+				delete = delete + fileToDelete + ".txt"; 
+				socketOut.println( delete );
+				String hello = socketIn.readLine();
+				System.out.println(hello);
+
+				break;
 
 				case 3: 
 				

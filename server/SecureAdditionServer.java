@@ -15,8 +15,8 @@ public class SecureAdditionServer {
 	private int port;
 	// This is not a reserved port number
 	static final int DEFAULT_PORT = 8189;
-	static final String KEYSTORE = "LIUkeystore.ks";
-	static final String TRUSTSTORE = "LIUtruststore.ks";
+	static final String KEYSTORE = "client/LIUkeystore.ks";
+	static final String TRUSTSTORE = "client/LIUtruststore.ks";
 	static final String KEYSTOREPASS = "123456";
 	static final String TRUSTSTOREPASS = "abcdef";
 	
@@ -69,14 +69,14 @@ public class SecureAdditionServer {
 					String fileName = fileNameAndContent.substring(0,fileNameAndContent.indexOf(","));
 					String content =  fileNameAndContent.split(",")[1].trim();
 
-					out.println("Endast filnamn " + fileName + " Endast content " + content);
 					//out.println("Endast content " + content);
 					
 					try {
-						File myObj = new File(fileName);
+						File myObj = new File("server/" + fileName);
+						
 						if (myObj.createNewFile()) {
 						  System.out.println("File created: " + myObj.getName());
-						  FileWriter myWriter = new FileWriter(fileName);
+						  FileWriter myWriter = new FileWriter("server/" + fileName);
 
 						  myWriter.write(content);
       					  myWriter.close();
@@ -88,6 +88,7 @@ public class SecureAdditionServer {
 						System.out.println("An error occurred.");
 						e.printStackTrace();
 					  }
+					  break;
 
 				case 1:
 					//download
@@ -111,18 +112,47 @@ public class SecureAdditionServer {
 
 						}
 						else{
-							out.println("The file doesn't exist");
+							out.println( "Does not exist" );
+
+							break;
+							
 						}
 
 					
 					  } catch (FileNotFoundException e) {
 						System.out.println("An error occurred.");
 						e.printStackTrace();
+						break;
+
 					  }
 
-
+					break;
 				case 2: 
 					//delete
+					String fileNameDelete = wholeString.substring(1);
+					if(option == 2){
+                        try {
+                            //Read file
+                            File deleteFile = new File("server/" + fileNameDelete);
+
+                            //deletes the file if it's exist
+                            if(deleteFile.delete()){
+
+                                out.println(">>>> " + deleteFile + " was deleted successfully on the server!");
+
+                            }
+                            else{
+                                out.println("File could not be deleted.");
+                            }
+
+
+                          } catch (Exception e) {
+                            System.out.println("File does not exist");
+                            e.printStackTrace();
+                          }
+						}
+						else System.out.println("An asdsad occurred.");
+
 
 				case 3:
 					//test
